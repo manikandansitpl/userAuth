@@ -4,7 +4,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Msg = require('../models/messageScheema');
 const nodemailer = require("nodemailer");
-
+const fs = require('fs'); 
+const path = require('path');
 
 const UserRegister = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
@@ -41,6 +42,7 @@ const UserRegister = asyncHandler(async (req, res) => {
 
 
     } catch (err) {
+        console.log(err.message)
         throw new Error(err.message)
     }
 })
@@ -153,4 +155,24 @@ const sendEmail = asyncHandler(async (req ,res) => {
       return res.status(200).json({message:"Password reset email sent"});
     });
 });
-module.exports = { UserRegister,sendEmail, getUsers, loginUser,createNote ,getNote}
+
+const videoPlay = asyncHandler(async (req, res) => {
+    try {
+      const filePath = path.join( 'assets', 'sample.mp4');
+      // Check if the file exists asynchronously
+      await fs.promises.access(filePath, fs.constants.F_OK);
+  
+      // Set the appropriate content type for video files
+      res.setHeader('Content-Type', 'video/mp4');
+  
+      // Create a readable stream to the video file
+      const stream = fs.createReadStream(filePath);
+  
+      // Pipe the stream to the response object
+      stream.pipe(res);
+    } catch (err) {
+      res.status(404).send('File not found');
+    }
+  });
+  
+module.exports = { UserRegister,sendEmail, getUsers, loginUser,createNote ,getNote ,videoPlay}
