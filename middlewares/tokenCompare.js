@@ -4,7 +4,7 @@ const User = require('../models/userScheema');
 const verifyToken= async(req ,res, next)=>{
     const authHead = req.headers.authorization;
     if(authHead){
-   const token = authHead.split(" ")[1]
+   const token = authHead.split(" ")[1];
     jwt.verify(token , process.env.JWT_KEY ,async (err , decode)=>{
         if(err) return  res.json({
                 isLoggedin:false,

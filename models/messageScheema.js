@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const messageScheema =  mongoose.Schema({
+const messageScheema =  new mongoose.Schema({
     user_Id:{
         type:mongoose.SchemaTypes.ObjectId,
         required:true,

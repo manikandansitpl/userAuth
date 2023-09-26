@@ -9,7 +9,6 @@ const userScheema = new mongoose.Schema({
         username:{
             type:String,
             require:[true , "please enter the user name"],
-            unique:true
         },
         password:{
             type:String,

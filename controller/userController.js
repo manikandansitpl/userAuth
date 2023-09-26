@@ -6,6 +6,7 @@ const Msg = require('../models/messageScheema');
 const nodemailer = require("nodemailer");
 const fs = require('fs'); 
 const path = require('path');
+const Atten = require('../models/attendanceShcema');
 
 const UserRegister = asyncHandler(async (req, res) => {
     const { username, email, password } = req.body;
@@ -15,7 +16,8 @@ const UserRegister = asyncHandler(async (req, res) => {
             throw new Error("Please fill all the fields")
         }
 
-        const userExist = await User.findOne({ username })
+        const userExist = await User.findOne({ email })
+
         if (userExist) {
             res.status(400)
             throw new Error("user Already exsist");
@@ -64,8 +66,8 @@ const getUsers = asyncHandler(async (req, res) => {
 })
 
 const loginUser = asyncHandler(async (req, res) => {
-    const { username, password } = req.body;
-    await User.findOne({ username }).then(dbUser => {
+    const { email, password } = req.body;
+    await User.findOne({ email }).then(dbUser => {
         if (!dbUser) {
             return res.status(500).json({
                 success: false,
@@ -85,7 +87,8 @@ const loginUser = asyncHandler(async (req, res) => {
                                     message: "login Faild !!"
                                 })
                             }
-                            return res.status(200).json({ success: true, message: "login Successfully !!", token, userDetails:dbUser })
+                            res.cookie("jwt" ,token);
+                            return res.status(200).json({ success: true, message: "login Successfully !!", token, detail:dbUser })
                         })
 
                 }else{
@@ -174,5 +177,30 @@ const videoPlay = asyncHandler(async (req, res) => {
       res.status(404).send('File not found');
     }
   });
+
+  const Attandance = asyncHandler(async(req,res)=>{
+    const {inTime ,outTime ,altDate ,studyDetails,position ,name} = req.body;
+        if(!inTime || !outTime ||!studyDetails || !name ){
+           res.status(404).json({success:false , message:"You Missed Time Fields"})
+        }else{
+        const atten = await Atten.create({
+            inTime,studyDetails,outTime,name,position, altDate,user_Id:req.user.id
+        })
+        atten.save().then((attendance) =>{
+            return res.status(201).json({success:true , message:"Timesheet Submit Successfully" , attendance})
+        }).catch(err => res.status(400) .json({success:false ,message:"TimeSheet Entry Faild"}))
+    }
+  })
+
+  const getUserId = asyncHandler(async(req,res)=>{
+    const getData =  await Atten.find({user_Id:req.user.id})
+    if(getData.length ===  0){
+        await res.status(404).json({success:false , message:"attendance not found"});
+        return false;
+    } else{
+        await res.status(200).json({success:true,message:"attendance fetch successfully !!" , attendance:getData})
+    }
+
+  })
   
-module.exports = { UserRegister,sendEmail, getUsers, loginUser,createNote ,getNote ,videoPlay}
+module.exports = { UserRegister,sendEmail, getUsers ,getUserId, loginUser,createNote ,getNote ,videoPlay,Attandance}
