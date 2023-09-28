@@ -180,7 +180,7 @@ const videoPlay = asyncHandler(async (req, res) => {
 
   const Attandance = asyncHandler(async(req,res)=>{
     const {inTime ,outTime ,altDate ,studyDetails,position ,name} = req.body;
-        if(!inTime || !outTime ||!studyDetails || !name ){
+        if(!inTime || !outTime ||!studyDetails || !name || !position ){
            res.status(404).json({success:false , message:"You Missed Time Fields"})
         }else{
         const atten = await Atten.create({

@@ -12,6 +12,7 @@ const attendance = new mongoose.Schema({
     },
     position:{
             type:String,
+            required:[true , "please select your position"]
     },
     inTime:{
         type:String,
