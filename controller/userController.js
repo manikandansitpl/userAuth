@@ -69,7 +69,7 @@ const loginUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     await User.findOne({ email }).then(dbUser => {
         if (!dbUser) {
-            return res.status(500).json({
+            return res.status(404).json({
                 success: false,
                 message: "Invalid UserName !!"
             })
@@ -78,7 +78,7 @@ const loginUser = asyncHandler(async (req, res) => {
             .then(isCorrect => {
                 if (isCorrect) {
                     jwt.sign({ id: dbUser._id }
-                        , process.env.JWT_KEY
+                        , process.env.JWT_KEY   
                         , { expiresIn: '1hr' },
                         (err, token) => {
                             if (err) {
